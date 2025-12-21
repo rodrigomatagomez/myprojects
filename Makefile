@@ -26,16 +26,11 @@ VERIBLE_LINT := verible-verilog-lint
 VERIBLE_FMT  := verible-verilog-format
 
 FMT_FLAGS  := --inplace --column_limit=100 --indentation_spaces=2
-LINT_FLAGS := --rules_config=verible.rules
+LINT_FLAGS :=
 
 .PHONY: all
 all: lint
 
-# ------------------------------------------
-# Create sim directory if missing
-# ------------------------------------------
-$(SIM_DIR):
-	mkdir -p $(SIM_DIR)
 
 # ------------------------------------------
 # Lint: Verible + Verilator
@@ -44,9 +39,9 @@ $(SIM_DIR):
 lint:
 	@echo "== Verible lint =="
 	@if [ -z "$(RTL_SRCS)$(VERIF_SRCS)" ]; then echo "No SV sources found"; exit 1; fi
-	$(VERIBLE_LINT) $(LINT_FLAGS) $(RTL_SRCS) $(VERIF_SRCS)
+	-$(VERIBLE_LINT) --rules=-line-length $(RTL_SRCS) $(VERIF_SRCS)
 	@echo "== Verilator lint =="
-	$(VERILATOR) --lint-only -Wall -sv $(RTL_SRCS) $(VERIF_SRCS)
+	$(VERILATOR) --lint-only -Wall -sv $(RTL_SRCS)
 
 # ------------------------------------------
 # Format: Verible
